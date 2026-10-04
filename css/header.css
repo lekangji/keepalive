@@ -1,6 +1,6 @@
 .topbar {
-  position: fixed;
-  inset: 0 0 auto 0;
+  position: relative;
+  flex-shrink: 0;
   z-index: 20;
   height: 72px;
   padding-inline: max(24px, calc((100vw - 1120px) / 2));
@@ -27,6 +27,18 @@
 }
 
 .brand-mark { width: 28px; height: 28px; flex: 0 0 auto; }
+
+.page-nav { display: flex; gap: 4px; }
+.page-nav a {
+  padding: 8px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  text-decoration: none;
+}
+.page-nav a:hover,
+.page-nav a[aria-current="page"] { background: var(--surface-2); color: var(--fg); }
+.page-nav a:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
 
 .header-actions {
   position: relative;

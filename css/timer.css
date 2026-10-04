@@ -1,8 +1,8 @@
 .main-stage {
   display: grid;
   place-items: center;
-  min-height: 100svh;
-  padding: 96px 16px 80px;
+  flex: 1;
+  padding: 24px 16px;
 }
 
 .timer-shell {

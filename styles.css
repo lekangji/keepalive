@@ -3,3 +3,10 @@
 @import url("css/timer.css");
 @import url("css/feedback.css");
 @import url("css/responsive.css");
+
+.about-content { width: min(640px, 100%); line-height: 1.6; }
+.about-content h1 { margin: 0 0 24px; font-size: 28px; letter-spacing: -.03em; }
+.about-content h2 { margin: 24px 0 8px; font-size: 18px; }
+.about-content p { margin: 8px 0; color: var(--muted); font-size: 14px; }
+.about-content details { border-bottom: 1px solid var(--border); padding: 12px 0; }
+.about-content summary { cursor: pointer; font-size: 14px; font-weight: 500; }

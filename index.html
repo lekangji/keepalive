@@ -13,12 +13,16 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#" aria-label="keepalive home">
+    <a class="brand" href="#timer" aria-label="keepalive home">
       <img class="brand-mark" src="assets/coffee.svg" alt="" width="28" height="28" />
       <span>keepalive</span>
     </a>
 
     <div class="header-actions">
+      <nav class="page-nav" aria-label="Main navigation">
+        <a href="#timer" aria-current="page">Timer</a>
+        <a href="#about">About</a>
+      </nav>
       <div class="lock-chip" id="lockChip" aria-live="polite">
         <span class="status-dot" id="statusDot"></span>
         <span id="statusText">Ready</span>
@@ -38,7 +42,7 @@
     </div>
   </header>
 
-  <main class="main-stage">
+  <main class="main-stage" id="timerPage">
     <section class="timer-shell" aria-label="Wake timer">
       <div class="mode-switch" role="tablist" aria-label="Wake mode">
         <button class="mode-button active" type="button" role="tab" aria-selected="true" data-mode="continuous">Infinite</button>
@@ -108,6 +112,39 @@
       <p>Your controls are in the always-on-top window.</p>
       <button class="text-button" id="returnButton" type="button">Bring back here</button>
     </div>
+  </main>
+
+  <main class="main-stage" id="aboutPage" hidden>
+    <article class="about-content" aria-labelledby="aboutTitle">
+      <h1 id="aboutTitle" tabindex="-1">About keepalive</h1>
+      <section aria-labelledby="whatTitle">
+        <h2 id="whatTitle">What does this page do?</h2>
+        <p>Keepalive asks your browser to keep your screen awake. Choose Infinite for an open-ended session, or Timer to set a duration. Pause or stop whenever you need.</p>
+      </section>
+      <section aria-labelledby="whyTitle">
+        <h2 id="whyTitle">Why use it?</h2>
+        <p>Keep a recipe, presentation, dashboard, or reading material visible without repeatedly waking your screen or changing your device settings. No account or installation needed.</p>
+      </section>
+      <section aria-labelledby="faqTitle">
+        <h2 id="faqTitle">FAQ</h2>
+        <details>
+          <summary>Does the tab need to stay visible?</summary>
+          <p>Yes. Keep this tab visible, or use the floating window in a supporting browser. Your browser may release the wake lock when the active document is hidden.</p>
+        </details>
+        <details>
+          <summary>What happens when the timer ends?</summary>
+          <p>Keepalive releases the wake lock. Your normal display and sleep settings take over; the page does not shut down your computer.</p>
+        </details>
+        <details>
+          <summary>Why might it not work?</summary>
+          <p>Your browser must support the Screen Wake Lock API, and the page must run over HTTPS or localhost. Device power-saving settings can also prevent a wake lock.</p>
+        </details>
+        <details>
+          <summary>Is my activity uploaded?</summary>
+          <p>No. Theme preferences and awake-time totals stay in your browser's local storage. No account is required.</p>
+        </details>
+      </section>
+    </article>
   </main>
 
   <footer class="footer">

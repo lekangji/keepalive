@@ -13,7 +13,7 @@
   --danger: #dc2626;
   --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 16px 48px rgba(0, 0, 0, .06);
   --ring-track: rgba(0, 0, 0, .08);
-  --clock-size: min(400px, 86vw);
+  --clock-size: min(400px, 86vw, max(240px, calc(100svh - 420px)));
 }
 
 html[data-resolved-theme="dark"] {
@@ -41,6 +41,8 @@ html {
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   margin: 0;
   min-width: 320px;
   min-height: 100svh;

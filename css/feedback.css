@@ -1,6 +1,6 @@
 .footer {
   position: relative;
-  margin-top: -54px;
+  flex-shrink: 0;
   z-index: 2;
   min-height: 54px;
   padding: 12px max(24px, calc((100vw - 1120px) / 2));

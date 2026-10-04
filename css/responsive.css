@@ -1,5 +1,7 @@
 @media (max-width: 640px) {
   .topbar { padding-inline: 16px; }
+  .header-actions { gap: 4px; }
+  .page-nav a { padding: 8px 6px; }
   .lock-chip { padding: 0 10px; }
   .timer-shell { gap: 22px; }
   .weekly-stat { flex-direction: column; align-items: center; gap: 8px; }
@@ -8,12 +10,15 @@
 }
 
 @media (max-height: 760px) and (min-width: 641px) {
-  :root { --clock-size: min(320px, 52vh); }
+  :root { --clock-size: min(320px, max(240px, calc(100svh - 390px))); }
   .clock-value, .clock-editor { font-size: 58px; }
   .timer-shell { gap: 16px; }
 }
 
 @media (max-width: 380px) {
+  .topbar { padding-inline: 10px; }
+  .brand { gap: 5px; }
+  .lock-chip { padding: 0 8px; gap: 5px; }
   .secondary-actions { gap: 6px; }
   .clock-caption { font-size: 12px; }
 }
