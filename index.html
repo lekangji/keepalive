@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+  <title>Awake — Keep your screen on</title>
+  <meta name="description" content="A minimal screen wake-lock timer." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Awake home">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>Awake</span>
+    </a>
+
+    <div class="header-actions">
+      <div class="lock-chip" id="lockChip" aria-live="polite">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Ready</span>
+      </div>
+
+      <button class="icon-button" id="themeButton" type="button" aria-label="Change theme" title="Change theme">
+        <svg class="theme-icon theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4V2m0 20v-2M4 12H2m20 0h-2M5.64 5.64 4.22 4.22m15.56 15.56-1.42-1.42M18.36 5.64l1.42-1.42M4.22 19.78l1.42-1.42"/><circle cx="12" cy="12" r="4"/></svg>
+        <svg class="theme-icon theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 15.6A9 9 0 0 1 8.4 3.4 9 9 0 1 0 20.6 15.6Z"/></svg>
+        <svg class="theme-icon theme-icon-system" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </button>
+
+      <div class="theme-menu" id="themeMenu" hidden>
+        <button type="button" data-theme-choice="light">Light <span>☼</span></button>
+        <button type="button" data-theme-choice="dark">Dark <span>◐</span></button>
+        <button type="button" data-theme-choice="system">System <span>⌘</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-stage">
+    <section class="timer-shell" aria-label="Wake timer">
+      <div class="mode-switch" role="tablist" aria-label="Wake mode">
+        <button class="mode-button active" type="button" role="tab" aria-selected="true" data-mode="continuous">Stop manually</button>
+        <button class="mode-button" type="button" role="tab" aria-selected="false" data-mode="timer">Use timer</button>
+      </div>
+
+      <div class="timer-settings" id="timerSettings" hidden>
+        <label class="duration-control" for="durationInput">
+          <span class="sr-only">Timer duration</span>
+          <input id="durationInput" type="text" inputmode="text" autocomplete="off" spellcheck="false" value="30m" aria-describedby="durationHint" />
+        </label>
+        <p class="duration-hint" id="durationHint">Try 25m, 1h 30m, or 01:30:00</p>
+      </div>
+
+      <div class="clock-wrap" id="clockWrap">
+        <svg class="progress-ring" id="progressRing" viewBox="0 0 360 360" aria-hidden="true">
+          <circle class="progress-track" cx="180" cy="180" r="164"></circle>
+          <circle class="progress-value" id="progressValue" cx="180" cy="180" r="164"></circle>
+        </svg>
+
+        <div class="clock-content">
+          <span class="clock-label" id="clockLabel">AWAKE FOR</span>
+          <time class="clock-value" id="timerValue" datetime="PT0S">00:00:00</time>
+          <span class="clock-caption" id="clockCaption">Ready when you are</span>
+        </div>
+      </div>
+
+      <button class="primary-button" id="wakeButton" type="button">
+        <span class="button-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2v10M7.05 5.05a8 8 0 1 0 9.9 0"/></svg>
+        </span>
+        <span id="wakeButtonText">Keep screen awake</span>
+      </button>
+
+      <p class="hint" id="supportNote" aria-live="polite">Ready when you are.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Uses Screen Lock when supported.</span>
+    <span>Runs locally · No account · No tracking</span>
+    <span>Made with ❤️ by lekang</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="app.js"></script>
+</body>
+</html>
