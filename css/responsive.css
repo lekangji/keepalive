@@ -1,0 +1,28 @@
+@media (max-width: 640px) {
+  .topbar { padding-inline: 16px; }
+  .lock-chip { padding: 0 10px; }
+  .timer-shell { gap: 22px; }
+  .weekly-stat { flex-direction: column; align-items: center; gap: 8px; }
+  .footer { padding: 10px 16px; justify-content: center; text-align: center; }
+  .footer span:last-child { display: none; }
+}
+
+@media (max-height: 760px) and (min-width: 641px) {
+  :root { --clock-size: min(320px, 52vh); }
+  .clock-value, .clock-editor { font-size: 58px; }
+  .timer-shell { gap: 16px; }
+}
+
+@media (max-width: 380px) {
+  .secondary-actions { gap: 6px; }
+  .clock-caption { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

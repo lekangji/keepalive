@@ -1,0 +1,81 @@
+.footer {
+  position: relative;
+  margin-top: -54px;
+  z-index: 2;
+  min-height: 54px;
+  padding: 12px max(24px, calc((100vw - 1120px) / 2));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--muted-2);
+  font-size: 11px;
+  line-height: 1.45;
+  pointer-events: none;
+}
+
+.swal2-popup.keepalive-alert {
+  border: 1px solid var(--border) !important;
+  border-radius: 14px !important;
+  background: var(--bg) !important;
+  color: var(--fg) !important;
+  box-shadow: var(--shadow) !important;
+  font-family: inherit !important;
+}
+
+.swal2-popup.keepalive-alert .swal2-title {
+  color: var(--fg) !important;
+  font-size: 20px !important;
+}
+
+.swal2-popup.keepalive-alert .swal2-html-container {
+  color: var(--muted) !important;
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
+
+.swal2-popup.keepalive-alert .swal2-confirm {
+  border-radius: 8px !important;
+  background: var(--accent) !important;
+  color: var(--accent-fg) !important;
+  box-shadow: none !important;
+}
+
+.swal2-popup.keepalive-alert .swal2-checkbox {
+  margin-top: 18px !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  font-size: 13px !important;
+}
+
+.swal2-popup.keepalive-alert .swal2-checkbox input {
+  width: 16px !important;
+  height: 16px !important;
+  accent-color: var(--fg);
+}
+
+@keyframes menuIn {
+  from { opacity: 0; transform: translateY(-5px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes stageIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes digitTick {
+  0% { opacity: .72; transform: translateY(3px) scale(.994); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes powerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .55; }
+}
+
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 14%, transparent); }
+  50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--success) 4%, transparent); }
+}
+
