@@ -23,7 +23,7 @@
         <span id="statusText">Ready</span>
       </div>
 
-      <button class="icon-button" id="themeButton" type="button" aria-label="Change theme" title="Change theme">
+      <button class="icon-button" id="themeButton" type="button" aria-label="Change theme" title="Change theme" aria-expanded="false">
         <svg class="theme-icon theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4V2m0 20v-2M4 12H2m20 0h-2M5.64 5.64 4.22 4.22m15.56 15.56-1.42-1.42M18.36 5.64l1.42-1.42M4.22 19.78l1.42-1.42"/><circle cx="12" cy="12" r="4"/></svg>
         <svg class="theme-icon theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 15.6A9 9 0 0 1 8.4 3.4 9 9 0 1 0 20.6 15.6Z"/></svg>
         <svg class="theme-icon theme-icon-system" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
@@ -44,14 +44,6 @@
         <button class="mode-button" type="button" role="tab" aria-selected="false" data-mode="timer">Use timer</button>
       </div>
 
-      <div class="timer-settings" id="timerSettings" hidden>
-        <label class="duration-control" for="durationInput">
-          <span class="sr-only">Timer duration</span>
-          <input id="durationInput" type="text" inputmode="text" autocomplete="off" spellcheck="false" value="30m" aria-describedby="durationHint" />
-        </label>
-        <p class="duration-hint" id="durationHint">Try 25m, 1h 30m, or 01:30:00</p>
-      </div>
-
       <div class="clock-wrap" id="clockWrap">
         <svg class="progress-ring" id="progressRing" viewBox="0 0 360 360" aria-hidden="true">
           <circle class="progress-track" cx="180" cy="180" r="164"></circle>
@@ -60,26 +52,51 @@
 
         <div class="clock-content">
           <span class="clock-label" id="clockLabel">AWAKE FOR</span>
+
           <time class="clock-value" id="timerValue" datetime="PT0S">00:00:00</time>
+
+          <div class="clock-editor" id="clockEditor" hidden aria-label="Set timer duration">
+            <label>
+              <span class="sr-only">Hours</span>
+              <input id="hoursInput" class="clock-part" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="00" autocomplete="off" aria-label="Hours" />
+            </label>
+            <span class="clock-colon" aria-hidden="true">:</span>
+            <label>
+              <span class="sr-only">Minutes</span>
+              <input id="minutesInput" class="clock-part" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="30" autocomplete="off" aria-label="Minutes" />
+            </label>
+            <span class="clock-colon" aria-hidden="true">:</span>
+            <label>
+              <span class="sr-only">Seconds</span>
+              <input id="secondsInput" class="clock-part" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="00" autocomplete="off" aria-label="Seconds" />
+            </label>
+          </div>
+
           <span class="clock-caption" id="clockCaption">Ready when you are</span>
         </div>
       </div>
 
-      <button class="primary-button" id="wakeButton" type="button">
-        <span class="button-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M12 2v10M7.05 5.05a8 8 0 1 0 9.9 0"/></svg>
-        </span>
-        <span id="wakeButtonText">Keep screen awake</span>
-      </button>
+      <div class="action-area">
+        <button class="primary-button" id="wakeButton" type="button">
+          <span class="button-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 2v10M7.05 5.05a8 8 0 1 0 9.9 0"/></svg>
+          </span>
+          <span id="wakeButtonText">Keep screen awake</span>
+        </button>
 
-      <p class="hint" id="supportNote" aria-live="polite">Ready when you are.</p>
+        <div class="weekly-stat" aria-live="polite">
+          <span>This week</span>
+          <strong id="weeklyTime">00:00:00</strong>
+        </div>
+
+        <p class="hint" id="supportNote">Uses the browser Screen Wake Lock API. Keep this tab visible while active.</p>
+      </div>
     </section>
   </main>
 
   <footer class="footer">
-    <span>Uses Screen Lock when supported.</span>
-    <span>Runs locally · No account · No tracking</span>
-    <span>Made with ❤️ by lekang</span>
+    <span>Runs locally in your browser.</span>
+    <span>No account · No tracking upload</span>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
