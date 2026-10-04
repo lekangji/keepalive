@@ -3,12 +3,16 @@ const $$ = (selector) => [...document.querySelectorAll(selector)];
 
 const RING_RADIUS = 164;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
-const WEEK_STORAGE_KEY = 'awake-weekly-time-v1';
-const FOCUS_WARNING_KEY = 'awake-hide-focus-warning';
+const WEEK_STORAGE_KEY = 'keepiton-weekly-time-v2';
+const LEGACY_WEEK_STORAGE_KEY = 'awake-weekly-time-v1';
+const FOCUS_WARNING_KEY = 'keepiton-hide-focus-warning';
+const LEGACY_FOCUS_WARNING_KEY = 'awake-hide-focus-warning';
+const THEME_STORAGE_KEY = 'keepiton-theme';
+const LEGACY_THEME_STORAGE_KEY = 'awake-theme';
 const TIMER_PART_LIMITS = { hours: 99, minutes: 59, seconds: 59 };
 
 const state = {
-  theme: localStorage.getItem('awake-theme') || 'system',
+  theme: localStorage.getItem(THEME_STORAGE_KEY) || localStorage.getItem(LEGACY_THEME_STORAGE_KEY) || 'system',
   mode: 'continuous',
   running: false,
   wakeLock: null,
@@ -20,7 +24,7 @@ const state = {
   hiddenWhileRunning: false,
   focusAlertShown: false,
   weekKey: '',
-  weekTrackedMs: 0,
+  weekTrackedSeconds: 0,
   trackingStartedAt: null,
   lastWeeklyRenderSecond: null,
   lastWeeklyPersistAt: 0,
@@ -44,7 +48,6 @@ const els = {
   wakeButton: $('#wakeButton'),
   wakeButtonText: $('#wakeButtonText'),
   weeklyTime: $('#weeklyTime'),
-  supportNote: $('#supportNote'),
 };
 
 const timerInputs = [els.hoursInput, els.minutesInput, els.secondsInput];
@@ -66,7 +69,7 @@ function resolveTheme() {
 
 function setTheme(theme) {
   state.theme = theme;
-  localStorage.setItem('awake-theme', theme);
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
   resolveTheme();
   setThemeMenuOpen(false);
 }
@@ -100,11 +103,17 @@ function loadWeeklyTime() {
   state.weekKey = currentWeekKey();
   try {
     const saved = JSON.parse(localStorage.getItem(WEEK_STORAGE_KEY) || 'null');
-    if (saved?.weekKey === state.weekKey && Number.isFinite(saved.ms) && saved.ms >= 0) {
-      state.weekTrackedMs = saved.ms;
+    if (saved?.weekKey === state.weekKey && Number.isFinite(saved.seconds) && saved.seconds >= 0) {
+      state.weekTrackedSeconds = Math.floor(saved.seconds);
+    } else {
+      const legacy = JSON.parse(localStorage.getItem(LEGACY_WEEK_STORAGE_KEY) || 'null');
+      if (legacy?.weekKey === state.weekKey && Number.isFinite(legacy.ms) && legacy.ms >= 0) {
+        state.weekTrackedSeconds = Math.floor(legacy.ms / 1000);
+        persistWeeklyTime();
+      }
     }
   } catch (_) {
-    state.weekTrackedMs = 0;
+    state.weekTrackedSeconds = 0;
   }
   renderWeeklyTime(Date.now(), true);
 }
@@ -114,7 +123,7 @@ function ensureCurrentWeek(now = Date.now()) {
   if (key === state.weekKey) return;
 
   state.weekKey = key;
-  state.weekTrackedMs = 0;
+  state.weekTrackedSeconds = 0;
   state.trackingStartedAt = isActivelyTracking() ? now : null;
   persistWeeklyTime(now);
 }
@@ -137,34 +146,36 @@ function beginTracking(now = Date.now()) {
 function commitTracking(now = Date.now()) {
   ensureCurrentWeek(now);
   if (state.trackingStartedAt !== null) {
-    state.weekTrackedMs += Math.max(0, now - state.trackingStartedAt);
+    // Store whole tracked seconds so the weekly counter advances on the exact
+    // same second boundaries as the active timer instead of drifting by ms.
+    state.weekTrackedSeconds += Math.floor(Math.max(0, now - state.trackingStartedAt) / 1000);
     state.trackingStartedAt = null;
   }
   persistWeeklyTime(now);
   renderWeeklyTime(now, true);
 }
 
-function getWeeklyTime(now = Date.now()) {
+function getWeeklySeconds(now = Date.now()) {
   ensureCurrentWeek(now);
-  const liveSegment = state.trackingStartedAt === null ? 0 : Math.max(0, now - state.trackingStartedAt);
-  return state.weekTrackedMs + liveSegment;
+  const liveSeconds = state.trackingStartedAt === null
+    ? 0
+    : Math.floor(Math.max(0, now - state.trackingStartedAt) / 1000);
+  return state.weekTrackedSeconds + liveSeconds;
 }
 
 function persistWeeklyTime(now = Date.now()) {
-  const total = getWeeklyTime(now);
   localStorage.setItem(WEEK_STORAGE_KEY, JSON.stringify({
     weekKey: state.weekKey,
-    ms: Math.floor(total),
+    seconds: getWeeklySeconds(now),
   }));
   state.lastWeeklyPersistAt = now;
 }
 
 function renderWeeklyTime(now = Date.now(), force = false) {
-  const total = getWeeklyTime(now);
-  const second = Math.floor(total / 1000);
+  const second = getWeeklySeconds(now);
   if (!force && second === state.lastWeeklyRenderSecond) return;
   state.lastWeeklyRenderSecond = second;
-  els.weeklyTime.textContent = formatClock(total, 'floor');
+  els.weeklyTime.textContent = formatClock(second * 1000, 'floor');
 }
 
 function normalizeTimerPart(input, max) {
@@ -265,8 +276,12 @@ async function releaseWakeLock() {
   updateStatus();
 }
 
-function renderFrame(now = Date.now()) {
+function renderFrame() {
   if (!state.running) return;
+
+  // requestAnimationFrame passes a performance.now() timestamp, while our
+  // start/deadline values use Date.now(). Never mix those two clock domains.
+  const now = Date.now();
 
   if (state.mode === 'continuous') {
     const elapsed = Math.max(0, now - state.startedAt);
@@ -318,7 +333,7 @@ function setRunningUI(running) {
   if (running) {
     showTimerEditor(false);
     els.clockCaption.textContent = state.mode === 'timer'
-      ? 'Screen stays awake until the timer ends'
+      ? 'Screen stays awake until the countdown ends'
       : 'Screen stays awake until you stop it';
   } else {
     showTimerEditor(state.mode === 'timer');
@@ -341,12 +356,11 @@ async function start() {
   try {
     await requestWakeLock();
   } catch (error) {
-    els.supportNote.classList.add('error');
-    els.supportNote.textContent = error.message || 'Could not start a screen wake lock.';
+    els.clockCaption.textContent = error.message || 'Could not start a screen wake lock.';
     updateStatus();
     if (window.Swal) {
       Swal.fire({
-        customClass: { popup: 'awake-alert' },
+        customClass: { popup: 'keepiton-alert' },
         icon: 'error',
         title: 'Could not keep the screen awake',
         text: error.message || 'Your browser refused the wake lock request.',
@@ -362,8 +376,6 @@ async function start() {
   state.hiddenWhileRunning = false;
   beginTracking(state.startedAt);
 
-  els.supportNote.classList.remove('error');
-  els.supportNote.textContent = 'Keep this tab visible. Browsers release screen wake locks when the page is hidden.';
   els.clockWrap.classList.toggle('counting-down', state.mode === 'timer');
   if (state.mode === 'timer') {
     setRingProgress(0);
@@ -386,8 +398,6 @@ async function stop({ preserveTimer = false } = {}) {
   els.clockWrap.classList.remove('counting-down');
   setRingProgress(0);
   setRunningUI(false);
-  els.supportNote.classList.remove('error');
-  els.supportNote.textContent = 'Uses the browser Screen Wake Lock API. Keep this tab visible while active.';
 
   if (!preserveTimer) {
     if (state.mode === 'timer') {
@@ -416,12 +426,11 @@ async function finishTimer() {
   setTimerText('00:00:00', 0);
   setRunningUI(false);
   els.clockCaption.textContent = 'Timer finished';
-  els.supportNote.textContent = 'Wake lock released. Your normal display and sleep settings apply again.';
   updateStatus();
 
   if (window.Swal) {
     Swal.fire({
-      customClass: { popup: 'awake-alert' },
+      customClass: { popup: 'keepiton-alert' },
       icon: 'success',
       title: 'Timer finished',
       text: 'The wake lock has been released.',
@@ -440,7 +449,7 @@ function setMode(mode) {
     button.setAttribute('aria-selected', String(selected));
   });
 
-  els.clockLabel.textContent = mode === 'timer' ? 'TIME REMAINING' : 'AWAKE FOR';
+  els.clockLabel.textContent = mode === 'timer' ? 'TIME REMAINING' : 'INFINITE';
   els.clockCaption.textContent = mode === 'timer' ? 'Type a duration, then start' : 'Ready when you are';
   els.clockWrap.classList.remove('counting-down');
   setRingProgress(0);
@@ -460,12 +469,13 @@ async function showFocusWarning() {
     || state.focusAlertShown
     || !window.Swal
     || localStorage.getItem(FOCUS_WARNING_KEY) === 'true'
+    || localStorage.getItem(LEGACY_FOCUS_WARNING_KEY) === 'true'
   ) return;
 
   state.focusAlertShown = true;
   try {
     const result = await Swal.fire({
-      customClass: { popup: 'awake-alert' },
+      customClass: { popup: 'keepiton-alert' },
       icon: 'warning',
       title: 'Keep this page visible',
       html: 'I can only keep your screen awake while this page is <strong>visible</strong>. Your browser pauses or releases the wake lock when you switch away.',
@@ -523,13 +533,50 @@ timerInputs.forEach((input, index) => {
   });
 
   input.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowRight' && input.selectionStart === input.value.length && index < timerInputs.length - 1) {
+    const selectionStart = input.selectionStart ?? 0;
+    const selectionEnd = input.selectionEnd ?? selectionStart;
+    const hasSelection = selectionStart !== selectionEnd;
+
+    if (event.key === 'ArrowRight' && !hasSelection && selectionEnd === input.value.length && index < timerInputs.length - 1) {
       event.preventDefault();
-      timerInputs[index + 1].focus();
+      const nextInput = timerInputs[index + 1];
+      nextInput.focus();
+      nextInput.setSelectionRange(0, 0);
+      return;
     }
-    if (event.key === 'ArrowLeft' && input.selectionStart === 0 && index > 0) {
+
+    if (event.key === 'ArrowLeft' && !hasSelection && selectionStart === 0 && index > 0) {
       event.preventDefault();
-      timerInputs[index - 1].focus();
+      const previousInput = timerInputs[index - 1];
+      previousInput.focus();
+      const caret = previousInput.value.length;
+      previousInput.setSelectionRange(caret, caret);
+      return;
+    }
+
+    // Backspace should flow naturally across HH:MM:SS. Once the current
+    // segment is empty (or the caret is already at its start), continue
+    // deleting from the end of the previous segment instead of getting stuck.
+    if (event.key === 'Backspace' && !hasSelection && selectionStart === 0 && index > 0) {
+      event.preventDefault();
+      const previousInput = timerInputs[index - 1];
+      previousInput.value = previousInput.value.slice(0, -1);
+      previousInput.focus();
+      const caret = previousInput.value.length;
+      previousInput.setSelectionRange(caret, caret);
+      updateDurationFromEditor();
+      return;
+    }
+
+    // Delete mirrors Backspace in the other direction, so editing can move
+    // through the entire timer without requiring a click into each segment.
+    if (event.key === 'Delete' && !hasSelection && selectionEnd === input.value.length && index < timerInputs.length - 1) {
+      event.preventDefault();
+      const nextInput = timerInputs[index + 1];
+      nextInput.value = nextInput.value.slice(1);
+      nextInput.focus();
+      nextInput.setSelectionRange(0, 0);
+      updateDurationFromEditor();
     }
   });
 });
@@ -592,6 +639,7 @@ showTimerEditor(false);
 setMode('continuous');
 
 if (!('wakeLock' in navigator)) {
-  els.supportNote.classList.add('error');
-  els.supportNote.textContent = 'This browser does not support the Screen Wake Lock API.';
+  els.clockCaption.textContent = 'This browser does not support the Screen Wake Lock API.';
+  els.statusDot.classList.add('error');
+  els.statusText.textContent = 'Unsupported';
 }

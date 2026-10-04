@@ -6,15 +6,15 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
-  <title>Awake — Keep your screen on</title>
+  <title>keepiton — Keep your screen on</title>
   <meta name="description" content="A minimal screen wake-lock timer." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#" aria-label="Awake home">
+    <a class="brand" href="#" aria-label="keepiton home">
       <span class="brand-mark" aria-hidden="true"></span>
-      <span>Awake</span>
+      <span>keepiton</span>
     </a>
 
     <div class="header-actions">
@@ -40,8 +40,8 @@
   <main class="main-stage">
     <section class="timer-shell" aria-label="Wake timer">
       <div class="mode-switch" role="tablist" aria-label="Wake mode">
-        <button class="mode-button active" type="button" role="tab" aria-selected="true" data-mode="continuous">Stop manually</button>
-        <button class="mode-button" type="button" role="tab" aria-selected="false" data-mode="timer">Use timer</button>
+        <button class="mode-button active" type="button" role="tab" aria-selected="true" data-mode="continuous">Infinite</button>
+        <button class="mode-button" type="button" role="tab" aria-selected="false" data-mode="timer">Countdown</button>
       </div>
 
       <div class="clock-wrap" id="clockWrap">
@@ -51,7 +51,7 @@
         </svg>
 
         <div class="clock-content">
-          <span class="clock-label" id="clockLabel">AWAKE FOR</span>
+          <span class="clock-label" id="clockLabel">INFINITE</span>
 
           <time class="clock-value" id="timerValue" datetime="PT0S">00:00:00</time>
 
@@ -89,14 +89,13 @@
           <strong id="weeklyTime">00:00:00</strong>
         </div>
 
-        <p class="hint" id="supportNote">Uses the browser Screen Wake Lock API. Keep this tab visible while active.</p>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <span>Runs locally in your browser.</span>
-    <span>No account · No tracking upload</span>
+    <span>Uses the browser Screen Wake Lock API. Keep this tab visible while active.</span>
+    <span>Runs locally · No account · No tracking upload</span>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

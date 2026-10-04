@@ -529,31 +529,23 @@ html[data-theme="system"] .theme-icon-system {
   font-variant-numeric: tabular-nums;
 }
 
-.hint {
-  max-width: 460px;
-  margin: 13px auto 0;
-  color: var(--muted-2);
-  font-size: 12px;
-  line-height: 1.55;
-}
-
-.hint.error { color: var(--danger); }
-
 .footer {
   position: fixed;
   inset: auto 0 0 0;
   z-index: 2;
   min-height: 54px;
-  padding-inline: max(24px, calc((100vw - 1120px) / 2));
+  padding: 12px max(24px, calc((100vw - 1120px) / 2));
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   color: var(--muted-2);
   font-size: 11px;
+  line-height: 1.45;
   pointer-events: none;
 }
 
-.swal2-popup.awake-alert {
+.swal2-popup.keepiton-alert {
   border: 1px solid var(--border) !important;
   border-radius: 14px !important;
   background: var(--bg) !important;
@@ -562,32 +554,32 @@ html[data-theme="system"] .theme-icon-system {
   font-family: inherit !important;
 }
 
-.swal2-popup.awake-alert .swal2-title {
+.swal2-popup.keepiton-alert .swal2-title {
   color: var(--fg) !important;
   font-size: 20px !important;
 }
 
-.swal2-popup.awake-alert .swal2-html-container {
+.swal2-popup.keepiton-alert .swal2-html-container {
   color: var(--muted) !important;
   font-size: 14px !important;
   line-height: 1.55 !important;
 }
 
-.swal2-popup.awake-alert .swal2-confirm {
+.swal2-popup.keepiton-alert .swal2-confirm {
   border-radius: 8px !important;
   background: var(--accent) !important;
   color: var(--accent-fg) !important;
   box-shadow: none !important;
 }
 
-.swal2-popup.awake-alert .swal2-checkbox {
+.swal2-popup.keepiton-alert .swal2-checkbox {
   margin-top: 18px !important;
   background: transparent !important;
   color: var(--muted) !important;
   font-size: 13px !important;
 }
 
-.swal2-popup.awake-alert .swal2-checkbox input {
+.swal2-popup.keepiton-alert .swal2-checkbox input {
   width: 16px !important;
   height: 16px !important;
   accent-color: var(--fg);
@@ -622,7 +614,6 @@ html[data-theme="system"] .theme-icon-system {
   :root { --clock-size: min(350px, 58vh, 84vw); }
   .mode-switch { top: 76px; }
   .action-area { top: calc(50% + 196px); }
-  .footer { display: none; }
 }
 
 @media (max-width: 640px) {
@@ -635,14 +626,22 @@ html[data-theme="system"] .theme-icon-system {
   .clock-value,
   .clock-editor { font-size: clamp(48px, 16vw, 70px); min-height: 70px; }
   .action-area { top: calc(50% + 210px); }
-  .footer { display: none; }
 }
 
 @media (max-width: 380px) {
   :root { --clock-size: min(324px, 92vw); }
   .mode-button { min-width: 101px; font-size: 12px; }
   .action-area { top: calc(50% + 190px); }
-  .hint { max-width: 330px; }
+}
+
+@media (max-width: 640px) {
+  .footer {
+    padding: 10px 16px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .footer span:last-child { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
