@@ -1,15 +1,16 @@
 function showPage() {
-  const about = window.location.hash === '#about';
-  document.getElementById('timerPage').hidden = about;
-  document.getElementById('aboutPage').hidden = !about;
+  const page = ['about', 'privacy', 'terms'].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : 'timer';
+  ['timer', 'about', 'privacy', 'terms'].forEach((name) => {
+    document.getElementById(`${name}Page`).hidden = name !== page;
+  });
   document.querySelectorAll('.page-nav a').forEach((link) => {
-    if (link.hash === (about ? '#about' : '#timer')) {
+    if (link.hash === `#${page}`) {
       link.setAttribute('aria-current', 'page');
     } else {
       link.removeAttribute('aria-current');
     }
   });
-  if (about) document.getElementById('aboutTitle').focus({ preventScroll: true });
+  if (page !== 'timer') document.getElementById(`${page}Title`).focus({ preventScroll: true });
   window.scrollTo(0, 0);
 }
 
@@ -24,7 +25,5 @@ showTimerEditor(false);
 setRunningUI(false);
 
 if (!('wakeLock' in navigator)) {
-  els.clockCaption.textContent = 'This browser does not support the Screen Wake Lock API.';
-  els.statusDot.classList.add('error');
-  els.statusText.textContent = 'Unsupported';
+  document.getElementById('wakeFallbackNotice').hidden = false;
 }

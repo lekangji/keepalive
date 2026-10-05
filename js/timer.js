@@ -63,7 +63,7 @@ function updateStatus() {
   if (!state.running) {
     els.statusText.textContent = state.mode === 'timer' && state.hasStarted && state.remainingMs <= 0 ? 'Finished' : state.hasStarted ? 'Paused' : 'Ready';
   } else if (locked) {
-    els.statusText.textContent = 'Screen awake';
+    els.statusText.textContent = state.wakeLock.fallback ? 'Video fallback active' : 'Screen awake';
   } else {
     els.statusText.textContent = 'Wake lock released';
   }

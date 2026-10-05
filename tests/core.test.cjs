@@ -138,3 +138,84 @@ test('old weekly totals migrate without inventing today totals', () => {
   assert.equal(c.els.weeklyTime.textContent, '1h 01m');
   assert.equal(c.els.todayTime.textContent, '0h 00m');
 });
+
+function videoSession() {
+  const fixture = session();
+  const c = fixture.context;
+  c.window.navigator = {};
+  c.document.defaultView = c.window;
+  const players = [];
+  c.window.NoSleep = class {
+    constructor() {
+      this.isEnabled = false;
+      this.noSleepVideo = { paused: true, addEventListener: (_, listener) => { this.onPause = listener; } };
+      players.push(this);
+    }
+    async enable() { this.isEnabled = true; this.noSleepVideo.paused = false; }
+    disable() { this.isEnabled = false; this.noSleepVideo.paused = true; this.onPause?.(); }
+  };
+  vm.runInContext(readFileSync(join(__dirname, '..', 'js', 'wake-lock.js'), 'utf8'), c);
+  return { ...fixture, players };
+}
+
+test('video fallback starts, tracks time, stops on pause, and resumes', async () => {
+  const { context: c, players, advance } = videoSession();
+  await c.start();
+  assert.equal(c.state.running, true);
+  assert.equal(players[0].isEnabled, true);
+  assert.equal(c.isWakeLockActive(), true);
+  advance(10000);
+  await c.stop();
+  assert.equal(players[0].isEnabled, false);
+  assert.equal(c.activityTotals(c.Date.now()).today, 10000);
+  await c.start();
+  assert.equal(c.state.running, true);
+  assert.equal(c.isWakeLockActive(), true);
+  await c.finishTimer();
+  assert.equal(c.isWakeLockActive(), false);
+  assert.equal(players[1].isEnabled, false);
+});
+
+test('video fallback is released while hidden and reacquired when visible', async () => {
+  const { context: c, players } = videoSession();
+  await c.start();
+  c.document.visibilityState = 'hidden';
+  await c.handleVisibilityChange();
+  assert.equal(players[0].isEnabled, false);
+  assert.equal(c.isWakeLockActive(), false);
+  c.document.visibilityState = 'visible';
+  await c.handleVisibilityChange();
+  assert.equal(c.isWakeLockActive(), true);
+});
+
+test('missing NoSleep or rejected video playback does not start the timer', async () => {
+  const { context: c } = videoSession();
+  c.window.NoSleep = undefined;
+  await c.start();
+  assert.equal(c.state.running, false);
+  assert.match(c.els.clockCaption.textContent, /NoSleep/);
+  c.window.NoSleep = class {
+    constructor() { this.noSleepVideo = {}; }
+    async enable() { throw new Error('Playback denied'); }
+    disable() {}
+  };
+  await c.start();
+  assert.equal(c.state.running, false);
+  assert.match(c.els.clockCaption.textContent, /Playback denied/);
+});
+
+test('native wake lock is preferred and denial is reported without video fallback', async () => {
+  const { context: c, players } = videoSession();
+  let released = false;
+  c.window.navigator.wakeLock = { request: async () => ({ released: false, addEventListener() {}, release: async () => { released = true; } }) };
+  await c.start();
+  assert.equal(c.state.running, true);
+  assert.equal(players.length, 0);
+  await c.stop();
+  assert.equal(released, true);
+  c.window.navigator.wakeLock.request = async () => { throw new Error('Permission denied'); };
+  await c.start();
+  assert.equal(c.state.running, false);
+  assert.equal(players.length, 0);
+  assert.match(c.els.clockCaption.textContent, /Permission denied/);
+});

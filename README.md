@@ -2,6 +2,10 @@
 
 Minimal static Screen Wake Lock site.
 
+Browsers without native screen wake lock use the [NoSleep.js](https://github.com/richtr/NoSleep.js) silent-video fallback. A notice explains this before starting. The fallback stops on pause, timer completion, or when the active page is hidden; browser playback and power-saving restrictions still apply. NoSleep.js and SweetAlert2 load from jsDelivr.
+
+Footer links open the privacy policy and terms of service, alongside the creator's GitHub profile. `robots.txt` allows crawling; no sitemap is included.
+
 ## Run locally
 
 Wake Lock generally requires HTTPS or localhost.

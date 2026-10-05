@@ -11,7 +11,27 @@
   color: var(--muted-2);
   font-size: 11px;
   line-height: 1.45;
-  pointer-events: none;
+  flex-wrap: wrap;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.footer-links a { color: inherit; text-underline-offset: 3px; }
+.footer-links a:hover { color: var(--fg); }
+.footer-links a:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+
+.fallback-notice {
+  max-width: 420px;
+  margin: 0 16px 16px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 .swal2-popup.keepalive-alert {
