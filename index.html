@@ -240,7 +240,7 @@
                 </section>
                 <section aria-labelledby="faqTitle">
                     <h2 id="faqTitle">FAQ</h2>
-                    <details>
+                    <details name="faq">
                         <summary>Does the tab need to stay visible?</summary>
                         <p>
                             Yes. Keep this tab visible, or use the floating window in a supporting
@@ -248,14 +248,14 @@
                             is hidden.
                         </p>
                     </details>
-                    <details>
+                    <details name="faq">
                         <summary>What happens when the timer ends?</summary>
                         <p>
                             Keepalive releases the wake lock. Your normal display and sleep settings
                             take over; the page does not shut down your computer.
                         </p>
                     </details>
-                    <details>
+                    <details name="faq">
                         <summary>Why might it not work?</summary>
                         <p>
                             Native screen wake lock requires HTTPS or localhost. If your browser has
@@ -264,7 +264,7 @@
                             device power-saving settings can prevent either method from working.
                         </p>
                     </details>
-                    <details>
+                    <details name="faq">
                         <summary>Is my activity uploaded?</summary>
                         <p>
                             No. Theme preferences and awake-time totals stay in your browser's local
@@ -313,7 +313,10 @@
                         >.
                     </p>
                 </section>
-                <p><a href="#timer">Back to timer</a></p>
+                <a class="text-button back-to-timer" href="#timer">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 5-7 7 7 7M5 12h14" /></svg>
+                    Back to timer
+                </a>
             </article>
         </main>
 
@@ -359,7 +362,10 @@
                         >.
                     </p>
                 </section>
-                <p><a href="#timer">Back to timer</a></p>
+                <a class="text-button back-to-timer" href="#timer">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 5-7 7 7 7M5 12h14" /></svg>
+                    Back to timer
+                </a>
             </article>
         </main>
 

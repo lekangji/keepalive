@@ -10,3 +10,5 @@
 .about-content p { margin: 8px 0; color: var(--muted); font-size: 14px; }
 .about-content details { border-bottom: 1px solid var(--border); padding: 12px 0; }
 .about-content summary { cursor: pointer; font-size: 14px; font-weight: 500; }
+.back-to-timer { margin-top: 28px; min-height: 44px; padding: 10px 14px; background: var(--surface); color: var(--fg); font-size: 14px; text-decoration: none; }
+.back-to-timer:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }

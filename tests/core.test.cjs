@@ -13,10 +13,11 @@ function session() {
   const element = () => ({
     value: '00', textContent: '', hidden: false, style: {},
     classList: { toggle() {}, remove() {}, add() {} },
-    setAttribute() {}, focus() {}, querySelectorAll: () => [],
+    setAttribute() {}, focus() {}, addEventListener() {}, querySelectorAll: () => [],
   });
   const els = Object.fromEntries(['wakeButton', 'wakeButtonText', 'restartButton', 'clockEditor', 'timerValue', 'clockWrap', 'clockLabel', 'clockCaption', 'statusDot', 'statusText', 'progressValue', 'weeklyTime', 'todayTime', 'timerShell'].map((key) => [key, element()]));
   const inputs = [element(), element(), element()];
+  inputs.forEach((input, index) => { input.id = ['hoursInput', 'minutesInput', 'secondsInput'][index]; });
   [els.hoursInput, els.minutesInput, els.secondsInput] = inputs;
   inputs[1].value = '01';
   const storage = new Map();
@@ -33,7 +34,7 @@ function session() {
       pipWindow: null, activityDays: {}, carryWeek: null,
       trackingStartedAt: null, wakeLock: null, lockRequestId: 0,
     },
-    document: { visibilityState: 'visible' },
+    document: { visibilityState: 'visible', getElementById: () => ({ hidden: false }) },
     localStorage: { getItem: (key) => storage.get(key) || null, setItem: (key, value) => storage.set(key, value) },
     requestWakeLock: async () => { context.state.wakeLock = { released: false }; },
     releaseWakeLock: async () => { context.commitTracking(now); context.state.wakeLock = null; },
@@ -45,6 +46,7 @@ function session() {
   for (const file of ['format', 'tracking', 'timer', 'session']) {
     vm.runInContext(readFileSync(join(__dirname, '..', 'js', `${file}.js`), 'utf8'), context);
   }
+  context.isSessionVisible = () => context.activeDocument().visibilityState === 'visible' && (Boolean(context.state.pipWindow) || !context.document.getElementById('timerPage').hidden);
   return { context, alerts, storage, advance: (ms) => { now += ms; }, setNow: (value) => { now = new Date(value).getTime(); } };
 }
 
@@ -177,15 +179,144 @@ test('video fallback starts, tracks time, stops on pause, and resumes', async ()
 });
 
 test('video fallback is released while hidden and reacquired when visible', async () => {
-  const { context: c, players } = videoSession();
+  const { context: c, players, advance } = videoSession();
   await c.start();
+  advance(10000);
   c.document.visibilityState = 'hidden';
   await c.handleVisibilityChange();
+  assert.equal(c.state.running, false);
+  assert.equal(c.state.remainingMs, 50000);
   assert.equal(players[0].isEnabled, false);
   assert.equal(c.isWakeLockActive(), false);
+  advance(120000);
   c.document.visibilityState = 'visible';
   await c.handleVisibilityChange();
+  assert.equal(c.state.running, true);
+  assert.equal(c.state.deadline - c.Date.now(), 50000);
+  assert.equal(c.activityTotals(c.Date.now()).today, 10000);
   assert.equal(c.isWakeLockActive(), true);
+});
+
+test('internal navigation pauses Infinite; manual pause never auto-resumes', async () => {
+  const { context: c, advance } = videoSession();
+  const timerPage = { hidden: false };
+  c.document.getElementById = () => timerPage;
+  c.setMode('continuous');
+  await c.start();
+  advance(5000);
+  timerPage.hidden = true;
+  await c.handleVisibilityChange();
+  assert.equal(c.state.running, false);
+  assert.equal(c.state.elapsedMs, 5000);
+  advance(30000);
+  timerPage.hidden = false;
+  await c.handleVisibilityChange();
+  assert.equal(c.state.running, true);
+  advance(2000);
+  await c.stop();
+  assert.equal(c.state.elapsedMs, 7000);
+  timerPage.hidden = true;
+  await c.handleVisibilityChange();
+  timerPage.hidden = false;
+  await c.handleVisibilityChange();
+  assert.equal(c.state.running, false);
+});
+
+test('returning before wake lock release completes still resumes automatically', async () => {
+  const { context: c } = videoSession();
+  await c.start();
+  let completeRelease;
+  c.state.wakeLock.release = () => new Promise((resolve) => { completeRelease = resolve; });
+  c.document.visibilityState = 'hidden';
+  const pause = c.handleVisibilityChange();
+  c.document.visibilityState = 'visible';
+  await c.handleVisibilityChange();
+  completeRelease();
+  await pause;
+  assert.equal(c.state.running, true);
+  assert.equal(c.isWakeLockActive(), true);
+});
+
+test('visible floating timer keeps running when the main page is hidden', async () => {
+  const { context: c } = videoSession();
+  await c.start();
+  c.state.pipWindow = { document: { visibilityState: 'visible' }, ...c.window };
+  c.document.visibilityState = 'hidden';
+  c.document.getElementById = () => ({ hidden: true });
+  await c.handleVisibilityChange();
+  assert.equal(c.state.running, true);
+});
+
+test('spacebar toggles the session once and preserves normal control shortcuts', async () => {
+  const { context: c } = session();
+  const listeners = {};
+  c.document.addEventListener = (type, listener) => { listeners[type] = listener; };
+  c.window.addEventListener = () => {};
+  c.matchMedia = () => ({ addEventListener() {} });
+  c.toggleFloatingWindow = () => {};
+  c.handleVisibilityChange = () => {};
+  c.$ = () => ({ addEventListener() {} });
+  c.els.themeButton = c.els.themeMenu = c.els.floatingButton = { addEventListener() {} };
+  vm.runInContext(readFileSync(join(__dirname, '..', 'js', 'events.js'), 'utf8'), c);
+  let prevented = 0;
+  const event = { key: ' ', target: { closest: () => null }, preventDefault: () => { prevented += 1; } };
+  await listeners.keydown(event);
+  assert.equal(c.state.running, true);
+  await listeners.keydown({ ...event, repeat: true });
+  assert.equal(c.state.running, true);
+  await listeners.keydown(event);
+  assert.equal(c.state.running, false);
+  assert.equal(prevented, 3);
+  for (const control of ['input', 'textarea', 'select', 'button', 'a', 'summary', '[contenteditable]', '[role="dialog"]']) {
+    await listeners.keydown({ ...event, target: { closest: (selector) => selector.includes(control) ? {} : null } });
+    assert.equal(c.state.running, false);
+  }
+  c.document.getElementById = () => ({ hidden: true });
+  await listeners.keydown(event);
+  assert.equal(c.state.running, false);
+});
+
+test('browser history restoration resumes a paused session', async () => {
+  const { context: c, advance } = videoSession();
+  const listeners = {};
+  c.document.addEventListener = () => {};
+  c.window.addEventListener = (type, listener) => { listeners[type] = listener; };
+  c.matchMedia = () => ({ addEventListener() {} });
+  c.toggleFloatingWindow = () => {};
+  c.$ = () => ({ addEventListener() {} });
+  c.els.themeButton = c.els.themeMenu = c.els.floatingButton = { addEventListener() {} };
+  vm.runInContext(readFileSync(join(__dirname, '..', 'js', 'events.js'), 'utf8'), c);
+  await c.start();
+  advance(10000);
+  listeners.pagehide();
+  assert.equal(c.state.running, false);
+  assert.equal(c.state.remainingMs, 50000);
+  await c.handleVisibilityChange();
+  advance(120000);
+  listeners.pageshow();
+  // Drain the wake-lock request and release microtasks.
+  for (let i = 0; i < 8; i += 1) await Promise.resolve();
+  assert.equal(c.state.running, true);
+  assert.equal(c.state.deadline - c.Date.now(), 50000);
+});
+
+test('navigation during a pending wake-lock request defers start until return', async () => {
+  const { context: c } = videoSession();
+  let grantLock;
+  let released = false;
+  c.window.navigator.wakeLock = { request: () => new Promise((resolve) => { grantLock = resolve; }) };
+  const starting = c.start();
+  c.document.visibilityState = 'hidden';
+  await c.handleVisibilityChange();
+  grantLock({ released: false, release: async () => { released = true; }, addEventListener() {} });
+  await starting;
+  assert.equal(released, true);
+  assert.equal(c.state.running, false);
+  assert.equal(c.state.resumeOnReturn, true);
+  c.window.navigator.wakeLock.request = async () => ({ released: false, release: async () => {}, addEventListener() {} });
+  c.document.visibilityState = 'visible';
+  await c.handleVisibilityChange();
+  assert.equal(c.state.running, true);
 });
 
 test('missing NoSleep or rejected video playback does not start the timer', async () => {

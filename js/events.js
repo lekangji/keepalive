@@ -101,8 +101,19 @@ els.restartButton.addEventListener('click', restart);
 els.floatingButton.addEventListener('click', toggleFloatingWindow);
 $('#returnButton').addEventListener('click', () => state.pipWindow?.close());
 
-// Browsers may release the lock when its document becomes hidden. Pause activity
-// tracking immediately, then re-acquire it in the visible tab or floating window.
+async function handleTimerKeydown(event) {
+  if (event.key !== ' ' || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey
+    || !isSessionVisible()
+    || event.target.closest('input, textarea, select, button, a, summary, [contenteditable], [role="dialog"], .swal2-container')) return;
+  event.preventDefault();
+  if (event.repeat || state.busy) return;
+  if (state.running) await stop();
+  else await start();
+}
+
+document.addEventListener('keydown', handleTimerKeydown);
+
+// Pause the session while its controls are hidden; resume when they return.
 document.addEventListener('visibilitychange', handleVisibilityChange);
 
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
@@ -110,11 +121,15 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
 });
 
 window.addEventListener('pagehide', () => {
-  state.running = false;
+  state.pageHidden = true;
   state.lockRequestId += 1;
-  commitTracking(Date.now());
+  handleVisibilityChange();
   state.pipWindow?.close();
-  if (state.wakeLock) state.wakeLock.release().catch(() => {});
+});
+
+window.addEventListener('pageshow', () => {
+  state.pageHidden = false;
+  handleVisibilityChange();
 });
 
 window.addEventListener('beforeunload', () => {

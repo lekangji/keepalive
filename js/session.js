@@ -64,7 +64,7 @@ function setRunningUI(running) {
 }
 
 async function start() {
-  if (state.running || state.busy) return;
+  if (state.running || state.busy || !isSessionVisible()) return;
   if (state.mode === 'timer' && state.remainingMs <= 0) {
     els.clockCaption.textContent = state.hasStarted ? 'Timer finished. Edit the time or click Restart.' : 'Enter a duration above zero';
     els.minutesInput.focus();
@@ -78,13 +78,19 @@ async function start() {
     state.deadline = state.mode === 'timer' ? state.startedAt + state.remainingMs : 0;
     state.running = true;
     state.hasStarted = true;
-    state.hiddenWhileRunning = false;
+    state.resumeOnReturn = false;
     beginTracking(state.startedAt);
     setTimerText(formatClock(state.mode === 'timer' ? state.remainingMs : state.elapsedMs, state.mode === 'timer' ? 'ceil' : 'floor'), Math.ceil((state.mode === 'timer' ? state.remainingMs : state.elapsedMs) / 1000));
     startAnimationLoop();
   } catch (error) {
     state.busy = false;
     setRunningUI(false);
+    if (!isSessionVisible()) {
+      state.resumeOnReturn = true;
+      updateStatus();
+      return;
+    }
+    state.resumeOnReturn = false;
     els.clockCaption.textContent = error.message || 'Could not start a screen wake lock.';
     updateStatus();
     if (state.mode === 'timer' && window.Swal) {
@@ -97,7 +103,8 @@ async function start() {
   updateStatus();
 }
 
-async function stop() {
+async function stop({ automatic = false } = {}) {
+  if (!automatic) state.resumeOnReturn = false;
   if (!state.running || state.busy) return;
   const now = Date.now();
   if (state.mode === 'timer') state.remainingMs = Math.max(0, state.deadline - now);
@@ -113,6 +120,8 @@ async function stop() {
   if (state.mode === 'timer') syncEditorToRemaining();
   updateStatus();
   renderWeeklyTime(now, true);
+  // A quick return can arrive before the wake lock finishes releasing.
+  if (state.resumeOnReturn) await handleVisibilityChange();
 }
 
 function syncEditorToRemaining() {

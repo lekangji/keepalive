@@ -3,6 +3,7 @@ function showPage() {
   ['timer', 'about', 'privacy', 'terms'].forEach((name) => {
     document.getElementById(`${name}Page`).hidden = name !== page;
   });
+  handleVisibilityChange();
   document.querySelectorAll('.page-nav a').forEach((link) => {
     if (link.hash === `#${page}`) {
       link.setAttribute('aria-current', 'page');

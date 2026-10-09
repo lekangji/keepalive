@@ -23,12 +23,12 @@ async function requestVideoWakeLock() {
 async function requestWakeLock() {
   const owner = activeDocument();
   const browser = owner.defaultView.navigator;
-  if (owner.visibilityState !== 'visible') throw new Error('Keep the tab or floating window visible, then try again.');
+  if (!isSessionVisible()) throw new Error('Keep the tab or floating window visible, then try again.');
   const requestId = ++state.lockRequestId;
   const lock = 'wakeLock' in browser
     ? await browser.wakeLock.request('screen')
     : await requestVideoWakeLock();
-  if (requestId !== state.lockRequestId || owner !== activeDocument() || owner.visibilityState !== 'visible') {
+  if (requestId !== state.lockRequestId || owner !== activeDocument() || !isSessionVisible()) {
     await lock.release();
     throw new Error('The active window changed. Try again.');
   }
@@ -55,16 +55,26 @@ async function releaseWakeLock() {
   updateStatus();
 }
 
+function isSessionVisible() {
+  return !state.pageHidden && activeDocument().visibilityState === 'visible'
+    && (Boolean(state.pipWindow) || !document.getElementById('timerPage').hidden);
+}
+
 async function handleVisibilityChange() {
   renderWeeklyTime(Date.now());
-  if (!state.running) return;
-  if (activeDocument().visibilityState === 'hidden') {
-    state.hiddenWhileRunning = true;
-    commitTracking(Date.now());
-    stopAnimationLoop();
-    if (state.wakeLock?.fallback) await releaseWakeLock();
+  if (state.busy) return;
+  if (!isSessionVisible()) {
+    if (state.running) {
+      state.resumeOnReturn = true;
+      await stop({ automatic: true });
+    }
     return;
   }
+  if (state.resumeOnReturn) {
+    await start();
+    return;
+  }
+  if (!state.running) return;
   if (state.mode === 'timer' && Date.now() >= state.deadline) {
     await finishTimer();
     return;
@@ -74,8 +84,4 @@ async function handleVisibilityChange() {
   }
   beginTracking(Date.now());
   startAnimationLoop();
-  if (state.hiddenWhileRunning) {
-    state.hiddenWhileRunning = false;
-    showFocusWarning();
-  }
 }

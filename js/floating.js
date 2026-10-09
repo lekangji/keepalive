@@ -42,6 +42,7 @@ async function toggleFloatingWindow() {
     els.floatingPlaceholder.hidden = false;
     els.floatingButton.querySelector('span').textContent = 'Return to tab';
     doc.addEventListener('visibilitychange', handleVisibilityChange);
+    doc.addEventListener('keydown', handleTimerKeydown);
     floating.addEventListener('pagehide', async () => {
       stopAnimationLoop();
       await releaseWakeLock();
