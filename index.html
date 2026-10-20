@@ -25,6 +25,13 @@
                 <nav class="page-nav" aria-label="Main navigation">
                     <a href="#timer" aria-current="page">Timer</a>
                     <a href="#about">About</a>
+                    <a href="https://github.com/lekangji/KeepAlive" target="_blank" rel="noopener noreferrer">
+                        <svg class="lucide lucide-github" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+                            <path d="M9 18c-4.51 2-5-2-7-2" />
+                        </svg>
+                        GitHub
+                    </a>
                 </nav>
                 <div class="lock-chip" id="lockChip" aria-live="polite">
                     <span class="status-dot" id="statusDot"></span>
@@ -39,29 +46,49 @@
                     title="Change theme"
                     aria-expanded="false"
                 >
-                    <svg class="theme-icon theme-icon-light" viewBox="0 0 24 24" aria-hidden="true">
-                        <path
-                            d="M12 4V2m0 20v-2M4 12H2m20 0h-2M5.64 5.64 4.22 4.22m15.56 15.56-1.42-1.42M18.36 5.64l1.42-1.42M4.22 19.78l1.42-1.42"
-                        />
+                    <!-- Lucide icons (ISC/MIT); see assets/lucide-LICENSE.txt. -->
+                    <svg class="lucide lucide-sun theme-icon theme-icon-light" viewBox="0 0 24 24" aria-hidden="true">
                         <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
+                        <path d="m4.93 4.93 1.41 1.41m11.32 11.32 1.41 1.41" />
+                        <path d="m6.34 17.66-1.41 1.41m14.14-14.14-1.41 1.41" />
                     </svg>
-                    <svg class="theme-icon theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M20.6 15.6A9 9 0 0 1 8.4 3.4 9 9 0 1 0 20.6 15.6Z" />
+                    <svg class="lucide lucide-moon theme-icon theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
                     </svg>
                     <svg
-                        class="theme-icon theme-icon-system"
+                        class="lucide lucide-monitor theme-icon theme-icon-system"
                         viewBox="0 0 24 24"
                         aria-hidden="true"
                     >
-                        <rect x="3" y="4" width="18" height="13" rx="2" />
+                        <rect width="20" height="14" x="2" y="3" rx="2" />
                         <path d="M8 21h8M12 17v4" />
                     </svg>
                 </button>
 
                 <div class="theme-menu" id="themeMenu" hidden>
-                    <button type="button" data-theme-choice="light">Light</button>
-                    <button type="button" data-theme-choice="dark">Dark</button>
-                    <button type="button" data-theme-choice="system">System</button>
+                    <button type="button" data-theme-choice="light">
+                        <svg class="lucide lucide-sun" viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="4" />
+                            <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
+                            <path d="m4.93 4.93 1.41 1.41m11.32 11.32 1.41 1.41" />
+                            <path d="m6.34 17.66-1.41 1.41m14.14-14.14-1.41 1.41" />
+                        </svg>
+                        Light
+                    </button>
+                    <button type="button" data-theme-choice="dark">
+                        <svg class="lucide lucide-moon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+                        </svg>
+                        Dark
+                    </button>
+                    <button type="button" data-theme-choice="system">
+                        <svg class="lucide lucide-monitor" viewBox="0 0 24 24" aria-hidden="true">
+                            <rect width="20" height="14" x="2" y="3" rx="2" />
+                            <path d="M8 21h8M12 17v4" />
+                        </svg>
+                        System
+                    </button>
                 </div>
             </div>
         </header>
@@ -181,8 +208,12 @@
                     </p>
                     <button class="primary-button" id="wakeButton" type="button">
                         <span class="button-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M12 2v10M7.05 5.05a8 8 0 1 0 9.9 0" />
+                            <svg class="lucide lucide-power" viewBox="0 0 24 24">
+                                <path d="M12 2v10M18.4 6.6a9 9 0 1 1-12.77.04" />
+                            </svg>
+                            <svg class="lucide lucide-pause" viewBox="0 0 24 24">
+                                <rect x="14" y="3" width="5" height="18" rx="1" />
+                                <rect x="5" y="3" width="5" height="18" rx="1" />
                             </svg>
                         </span>
                         <span id="wakeButtonText">Keep screen awake</span>
@@ -193,9 +224,9 @@
                             Restart
                         </button>
                         <button class="text-button" id="floatingButton" type="button">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <rect x="3" y="4" width="18" height="16" rx="2" />
-                                <rect x="11" y="11" width="8" height="7" rx="1" /></svg
+                            <svg class="lucide lucide-picture-in-picture-2" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4" />
+                                <rect width="10" height="7" x="12" y="13" rx="2" /></svg
                             ><span>Open floating window</span>
                         </button>
                     </div>
@@ -241,7 +272,7 @@
                 <section aria-labelledby="faqTitle">
                     <h2 id="faqTitle">FAQ</h2>
                     <details name="faq">
-                        <summary>Does the tab need to stay visible?</summary>
+                        <summary><svg class="lucide lucide-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>Does the tab need to stay visible?</summary>
                         <p>
                             Yes. Keep this tab visible, or use the floating window in a supporting
                             browser. Your browser may release the wake lock when the active document
@@ -249,14 +280,14 @@
                         </p>
                     </details>
                     <details name="faq">
-                        <summary>What happens when the timer ends?</summary>
+                        <summary><svg class="lucide lucide-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>What happens when the timer ends?</summary>
                         <p>
                             Keepalive releases the wake lock. Your normal display and sleep settings
                             take over; the page does not shut down your computer.
                         </p>
                     </details>
                     <details name="faq">
-                        <summary>Why might it not work?</summary>
+                        <summary><svg class="lucide lucide-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>Why might it not work?</summary>
                         <p>
                             Native screen wake lock requires HTTPS or localhost. If your browser has
                             no native support, Keepalive uses NoSleep.js to play a silent background
@@ -265,7 +296,7 @@
                         </p>
                     </details>
                     <details name="faq">
-                        <summary>Is my activity uploaded?</summary>
+                        <summary><svg class="lucide lucide-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>Is my activity uploaded?</summary>
                         <p>
                             No. Theme preferences and awake-time totals stay in your browser's local
                             storage. No account is required.
@@ -314,7 +345,7 @@
                     </p>
                 </section>
                 <a class="text-button back-to-timer" href="#timer">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 5-7 7 7 7M5 12h14" /></svg>
+                    <svg class="lucide lucide-arrow-left" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5" /></svg>
                     Back to timer
                 </a>
             </article>
@@ -363,7 +394,7 @@
                     </p>
                 </section>
                 <a class="text-button back-to-timer" href="#timer">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 5-7 7 7 7M5 12h14" /></svg>
+                    <svg class="lucide lucide-arrow-left" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5" /></svg>
                     Back to timer
                 </a>
             </article>
@@ -375,9 +406,6 @@
             <nav class="footer-links" aria-label="Footer navigation">
                 <a href="#privacy">Privacy policy</a>
                 <a href="#terms">Terms of service</a>
-                <a href="https://github.com/lekangji/" target="_blank" rel="noopener noreferrer"
-                    ><b>GitHub</b></a
-                >
             </nav>
         </footer>
 

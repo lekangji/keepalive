@@ -94,7 +94,7 @@ async function start() {
     els.clockCaption.textContent = error.message || 'Could not start a screen wake lock.';
     updateStatus();
     if (state.mode === 'timer' && window.Swal) {
-      Swal.fire({ target: activeDocument().body, customClass: { popup: 'keepalive-alert' }, icon: 'error', title: 'Could not keep the screen awake', text: error.message || 'Your browser refused the wake lock request.', confirmButtonText: 'OK' });
+      Swal.fire({ target: activeDocument().body, customClass: { popup: 'keepalive-alert' }, icon: 'error', iconHtml: '<svg class="lucide lucide-circle-x" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6m0-6 6 6" /></svg>', title: 'Could not keep the screen awake', text: error.message || 'Your browser refused the wake lock request.', confirmButtonText: 'OK' });
     }
     return;
   }
@@ -161,7 +161,7 @@ async function finishTimer() {
   els.clockCaption.textContent = 'Timer finished. Edit the time or click Restart.';
   updateStatus();
   if (state.mode === 'timer' && window.Swal) {
-    Swal.fire({ target: activeDocument().body, customClass: { popup: 'keepalive-alert' }, icon: 'success', title: 'Timer finished', text: 'The wake lock has been released.', confirmButtonText: 'Done' });
+    Swal.fire({ target: activeDocument().body, customClass: { popup: 'keepalive-alert' }, icon: 'success', iconHtml: '<svg class="lucide lucide-circle-check" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m16 9-5.5 5.5L8 12" /></svg>', title: 'Timer finished', text: 'The wake lock has been released.', confirmButtonText: 'Done' });
   }
 }
 
@@ -200,6 +200,7 @@ async function showFocusWarning() {
       target: activeDocument().body,
       customClass: { popup: 'keepalive-alert' },
       icon: 'warning',
+      iconHtml: '<svg class="lucide lucide-triangle-alert" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4M12 17h.01" /></svg>',
       title: 'Keep this page visible',
       html: 'I can only keep your screen awake while this page is <strong>visible</strong>. Your browser pauses or releases the wake lock when you switch away.',
       input: 'checkbox',

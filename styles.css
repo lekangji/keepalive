@@ -9,6 +9,9 @@
 .about-content h2 { margin: 24px 0 8px; font-size: 18px; }
 .about-content p { margin: 8px 0; color: var(--muted); font-size: 14px; }
 .about-content details { border-bottom: 1px solid var(--border); padding: 12px 0; }
-.about-content summary { cursor: pointer; font-size: 14px; font-weight: 500; }
+.about-content summary { display: flex; align-items: baseline; gap: 6px; cursor: pointer; font-size: 14px; font-weight: 500; list-style: none; }
+.about-content summary::-webkit-details-marker { display: none; }
+.about-content summary .lucide { align-self: center; }
+.about-content details[open] summary .lucide { transform: rotate(90deg); }
 .back-to-timer { margin-top: 28px; min-height: 44px; padding: 10px 14px; background: var(--surface); color: var(--fg); font-size: 14px; text-decoration: none; }
 .back-to-timer:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }

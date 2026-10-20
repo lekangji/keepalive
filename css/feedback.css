@@ -48,6 +48,15 @@
   font-size: 20px !important;
 }
 
+.swal2-popup.keepalive-alert .swal2-icon {
+  border: 0;
+}
+
+.swal2-popup.keepalive-alert .swal2-icon .lucide {
+  width: 64px;
+  height: 64px;
+}
+
 .swal2-popup.keepalive-alert .swal2-html-container {
   color: var(--muted) !important;
   font-size: 14px !important;

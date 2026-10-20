@@ -30,6 +30,9 @@
 
 .page-nav { display: flex; gap: 4px; }
 .page-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px;
   border-radius: 6px;
   color: var(--muted);
@@ -110,7 +113,7 @@
   height: 16px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.6;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -145,7 +148,8 @@ html[data-theme="system"] .theme-icon-system {
   border-radius: 7px;
   padding: 8px 9px;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
   font-size: 13px;
   text-align: left;

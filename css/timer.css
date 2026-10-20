@@ -260,11 +260,14 @@
   height: 17px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.8;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
+.button-icon .lucide-pause,
+.primary-button.running .button-icon .lucide-power { display: none; }
+.primary-button.running .button-icon .lucide-pause { display: block; }
 
 
 .weekly-stat {
@@ -308,7 +311,7 @@
 }
 .text-button:hover { background: var(--surface-2); color: var(--fg); }
 .text-button:disabled { opacity: .5; cursor: wait; }
-.text-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
+.text-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
 .activity-stats { display: flex; justify-content: center; gap: 28px; padding-top: 5px; }
 .floating-placeholder { text-align: center; max-width: 360px; }
 .floating-placeholder h1 { font-size: 24px; font-weight: 550; letter-spacing: -.03em; }
@@ -316,11 +319,42 @@
 .floating-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 0; }
 .floating-status { color: var(--muted); font-size: 12px; }
 .floating-status.active { color: var(--success); }
-.floating-view { min-width: 280px; min-height: 100svh; }
-.floating-view .timer-shell { width: 100%; padding: 18px 12px; gap: 14px; }
-.floating-view .clock-wrap { width: min(260px, 78vw); height: min(260px, 78vw); }
+.floating-root { min-width: 0; }
+.floating-view { min-width: 0; min-height: 100svh; }
+.floating-view .timer-shell { width: 100%; flex: 1; justify-content: center; padding: 16px 12px; gap: 12px; }
+.floating-view .clock-wrap { width: min(260px, 78vw, calc(100svh - 280px)); height: min(260px, 78vw, calc(100svh - 280px)); }
 .floating-view .clock-value, .floating-view .clock-editor { font-size: clamp(32px, 11vw, 48px); }
 .floating-view .clock-caption { font-size: 12px; }
 .floating-view .mode-button { height: 30px; min-width: 95px; }
 .floating-view .action-area { gap: 8px; }
 .floating-view .primary-button { height: 40px; }
+
+/* Keep the live controls visible when either window dimension gets tight. */
+@media (max-width: 300px), (max-height: 460px) {
+  .floating-view { height: 100svh; min-height: 0; }
+  .floating-view .floating-header,
+  .floating-view .mode-switch,
+  .floating-view .clock-label,
+  .floating-view .clock-caption,
+  .floating-view .progress-ring,
+  .floating-view .clock-wrap::before,
+  .floating-view .secondary-actions,
+  .floating-view .activity-stats,
+  .floating-view .fallback-notice { display: none; }
+  .floating-view .timer-shell { min-height: 0; gap: 8px; padding: min(12px, 3vw, 3vh); }
+  .floating-view .clock-wrap { width: 100%; height: auto; min-height: 0; flex: 1; border-radius: 0; background: none; box-shadow: none; container-type: inline-size; }
+  .floating-view .clock-content { width: 100%; }
+  .floating-view .clock-value,
+  .floating-view .clock-editor { font-size: min(48px, 22cqw, 30vh); }
+  .floating-view .action-area { width: auto; }
+  .floating-view .primary-button { width: 44px; height: 40px; padding: 0; gap: 0; flex-shrink: 0; }
+  .floating-view #wakeButtonText { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+}
+
+@media (max-height: 160px) {
+  .floating-view .timer-shell { flex-direction: row; }
+  .floating-view .clock-wrap { width: auto; height: 100%; }
+  .floating-view .clock-value,
+  .floating-view .clock-editor { font-size: min(48px, 22cqw, 50vh); }
+  .floating-view .primary-button { width: min(44px, 35vw, 70vh); height: min(44px, 35vw, 70vh); }
+}

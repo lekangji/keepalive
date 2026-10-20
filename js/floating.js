@@ -19,6 +19,7 @@ async function toggleFloatingWindow() {
     state.pipWindow = floating;
     const doc = floating.document;
     doc.title = 'keepalive';
+    doc.documentElement.classList.add('floating-root');
     doc.documentElement.dataset.theme = state.theme;
     doc.documentElement.dataset.resolvedTheme = els.html.dataset.resolvedTheme;
     // Flatten local CSS imports so the first floating frame is already styled.
